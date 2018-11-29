@@ -11,10 +11,10 @@ int main(int argc, char *argv[])
     oVdoCap = cv::VideoCapture(argv[1]);
 
     if (!oVdoCap.isOpened())
-	{
-		std::cout << "Error: The video is not captured properly" << std::endl;
-		return 0;
-	}
+    {
+        std::cout << "Error: The video is not captured properly" << std::endl;
+        return 0;
+    }
 
     // create folder for output images
     mkdir(argv[2], S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
@@ -24,18 +24,18 @@ int main(int argc, char *argv[])
 
     // process every frame
     while (true)
-	{
+    {
         std::printf("frame %06d\n", nFrmCnt);
 
         oVdoCap >> oImgFrm;
 
         if (oImgFrm.empty())
-			break;
+            break;
 
-        char acOutFrmNm[128] = { 0 };
+        char acOutFrmNm[128] = {0};
         std::sprintf(acOutFrmNm, "%06d.jpg", nFrmCnt);
-        char acOutFrmPth[128] = { 0 };
-        std::sprintf(acOutFrmPth, argv[2]);
+        char acOutFrmPth[128] = {0};
+        std::sprintf(acOutFrmPth, "%s", argv[2]);
         std::strcat(acOutFrmPth, acOutFrmNm);
         cv::imwrite(acOutFrmPth, oImgFrm);
 
@@ -44,12 +44,9 @@ int main(int argc, char *argv[])
         //cv::waitKey(0);
 
         nFrmCnt++;
-	}
+    }
 
-	std::printf("finished\n", nFrmCnt);
+    std::printf("finished %d\n", nFrmCnt);
 
     return 0;
 }
-
-
-
