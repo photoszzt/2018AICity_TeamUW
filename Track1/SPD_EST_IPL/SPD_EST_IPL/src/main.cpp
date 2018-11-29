@@ -8,8 +8,11 @@
 //-----------------------------------------------------------------------------------
 
 #include <fstream>
+#ifdef __WIN32
 #include <direct.h>	// in Windows
-//#include <sys/stat.h>	// in Linux
+#elif __linux__
+#include <sys/stat.h>	// in Linux
+#endif
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -34,7 +37,7 @@ public:
 	inline cv::Point3f get3dFtPt(void) { return m_o3dFtPt; }
 	inline void set3dFtPt(cv::Point3f o3dFtPt) { m_o3dFtPt = o3dFtPt; }
 	inline char* getDetCls(void) { return m_acDetCls; }
-	inline void setDetCls(char* acDetCls) { std::sprintf(m_acDetCls, acDetCls); }
+	inline void setDetCls(char* acDetCls) { std::sprintf(m_acDetCls, "%s", acDetCls); }
 	inline float getDep(void) { return m_fDep; }
 	inline void setDep(float fDep) { m_fDep = fDep; }
 	inline float getSpd(void) { return m_fSpd; }
@@ -186,7 +189,7 @@ int main(int argc, char *argv[])
 	// path to the submission txt file
 	char acOutSubmPth[256] = {};
 	char acOutSubmNm[256] = {};
-	std::sprintf(acOutSubmPth, acTrk1FlrPth);
+	std::sprintf(acOutSubmPth, "%s", acTrk1FlrPth);
 	std::sprintf(acOutSubmNm, "track1.txt");
 	std::strcat(acOutSubmPth, acOutSubmNm);
 	FILE* pfOutSubmTxt = std::fopen(acOutSubmPth, "w");
@@ -195,57 +198,60 @@ int main(int argc, char *argv[])
 	{
 		char acOutVdoPth[256] = {};
 		char acOutVdoNm[256] = {};
-		std::sprintf(acOutVdoPth, acTrk1FlrPth);
+		std::sprintf(acOutVdoPth, "%s", acTrk1FlrPth);
 		std::sprintf(acOutVdoNm, "track1.avi");
 		std::strcat(acOutVdoPth, acOutVdoNm);
 		oVdoWrt = cv::VideoWriter(acOutVdoPth, CV_FOURCC('M', 'P', '4', '2'), fFrmRt, oFrmSz);
 	}
 
-	for (int v = 0; v < viVdo.size(); v++)
+	for (unsigned int v = 0; v < viVdo.size(); v++)
 	{
 		// path to the camera folders
 		char acCamFlrPth[256] = {};
-		std::sprintf(acCamFlrPth, acTrk1FlrPth);
+		std::sprintf(acCamFlrPth, "%s", acTrk1FlrPth);
 		std::strcat(acCamFlrPth, vstrCam[v].c_str());
 		// input camera parameters for 2D-to-3D back projection
 		char acInCamParamPth[256] = {};
 		char acInCamParamNm[256] = {};
-		std::sprintf(acInCamParamPth, acCamFlrPth);
+		std::sprintf(acInCamParamPth, "%s", acCamFlrPth);
 		std::sprintf(acInCamParamNm, "\\camCal\\camParam.txt");
 		std::strcat(acInCamParamPth, acInCamParamNm);
 		// input 2D tracking results
 		char acInTrk2dPth[256] = {};
 		char acInTrk2dNm[256] = {};
-		std::sprintf(acInTrk2dPth, acCamFlrPth);
+		std::sprintf(acInTrk2dPth, "%s", acCamFlrPth);
 		std::sprintf(acInTrk2dNm, "\\trk2d.txt");
 		std::strcat(acInTrk2dPth, acInTrk2dNm);
 		// input folder of frame images
 		char acInFrmFlrPth[256] = {};
 		char acInFrmFlrNm[256] = {};
-		std::sprintf(acInFrmFlrPth, acCamFlrPth);
+		std::sprintf(acInFrmFlrPth, "%s", acCamFlrPth);
 		std::sprintf(acInFrmFlrNm, "\\img1\\");
 		std::strcat(acInFrmFlrPth, acInFrmFlrNm);
 		// output folder of each version
 		char acOutTrkFlrPth[256] = {};
 		char acOutTrkFlrNm[256] = {};
-		std::sprintf(acOutTrkFlrPth, acCamFlrPth);
+		std::sprintf(acOutTrkFlrPth, "%s", acCamFlrPth);
 		std::sprintf(acOutTrkFlrNm, "\\trk3d\\");
 		std::strcat(acOutTrkFlrPth, acOutTrkFlrNm);
 		// output tracking results in NVIDIA AI City Challenge format
 		char acOutTrkPth[256] = {};
 		char acOutTrkNm[256] = {};
-		std::sprintf(acOutTrkPth, acOutTrkFlrPth);
+		std::sprintf(acOutTrkPth, "%s", acOutTrkFlrPth);
 		std::sprintf(acOutTrkNm, "track1.txt");
 		std::strcat(acOutTrkPth, acOutTrkNm);
 		// output folder of plotted images of 3D tracking
 		char acOutTrk3dImgFlrPth[256] = {};
 		char acOutTrk3dImgFlrNm[256] = {};
-		std::sprintf(acOutTrk3dImgFlrPth, acOutTrkFlrPth);
+		std::sprintf(acOutTrk3dImgFlrPth, "%s", acOutTrkFlrPth);
 		std::sprintf(acOutTrk3dImgFlrNm, "trk3dimg1\\");
 		std::strcat(acOutTrk3dImgFlrPth, acOutTrk3dImgFlrNm);
 
+#ifdef __WIN32
 		_mkdir(acOutTrkFlrPth);	// in Windows
-		//mkdir(acOutTrkFlrPth, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);	// in Linux
+#elif __linus__
+		mkdir(acOutTrkFlrPth, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);	// in Linux
+#endif
 
 		std::vector<std::vector<CTrkNd> > vvoTrkNd;
 		std::vector<std::vector<CTrkNd> > vvoTrkNdFN;
@@ -274,7 +280,8 @@ int main(int argc, char *argv[])
 
 		// read 2D tracking results
 		char acInTrkBuf[256] = { 0 };
-		int nFrmCnt, nId, nFrmCntMax = -1;
+		int nFrmCnt, nFrmCntMax = -1;
+		size_t nId;
 		float fDetScr = 0.0f, fDep, fSpd;
 		cv::Rect oBBox;
 		cv::Point2f o2dFtPt;
@@ -287,7 +294,7 @@ int main(int argc, char *argv[])
 		while (!ifsInTrkTxt.eof())
 		{
 			// read from the input txt file
-			std::sscanf(acInTrkBuf, "%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%s", &nFrmCnt, &nId,
+			std::sscanf(acInTrkBuf, "%d,%lud,%d,%d,%d,%d,%f,%f,%f,%f,%s", &nFrmCnt, &nId,
 				&oBBox.x, &oBBox.y, &oBBox.width, &oBBox.height,
 				&fDetScr, &o3dFtPt.x, &o3dFtPt.y, &o3dFtPt.z, acDetCls);
 
@@ -319,7 +326,7 @@ int main(int argc, char *argv[])
 		// compute speed
 		int nTrajLen, iSt, iNd, nSpdWinSzUpd;
 		float fDist;
-		for (int i = 0; i < vvoTrkNd.size(); i++)
+		for (unsigned int i = 0; i < vvoTrkNd.size(); i++)
 		{
 			nTrajLen = vvoTrkNd[i].size();
 			nSpdWinSzUpd = (nTrajLen < vnSpdWinSz[v]) ? nTrajLen : vnSpdWinSz[v];
@@ -342,7 +349,7 @@ int main(int argc, char *argv[])
 		}
 
 		// compute speed for false negatives
-		for (int i = 0; i < vvoTrkNdFN.size(); i++)
+		for (unsigned int i = 0; i < vvoTrkNdFN.size(); i++)
 		{
 			nTrajLen = vvoTrkNdFN[i].size();
 			nSpdWinSzUpd = (nTrajLen < vnSpdWinSz[v]) ? nTrajLen : vnSpdWinSz[v];
@@ -370,7 +377,7 @@ int main(int argc, char *argv[])
 		float fTrkNdTPDist, fTrkNdTPDistMin;
 		double fSpdConstAvg = 0.0;
 		std::vector<double> vfSpdMean, vfSpdMeanFN, vfSpdStd, vfSpdMeanCls;
-		for (int i = 0; i < vvoTrkNd.size(); i++)
+		for (unsigned int i = 0; i < vvoTrkNd.size(); i++)
 		{
 			nTrajLen = vvoTrkNd[i].size();
 
@@ -398,7 +405,7 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		for (int i = 0; i < vvoTrkNd.size(); i++)
+		for (unsigned int i = 0; i < vvoTrkNd.size(); i++)
 		{
 			vfSpdStd.push_back(0.0);
 			nTrajLen = vvoTrkNd[i].size();
@@ -505,8 +512,11 @@ int main(int argc, char *argv[])
 
 		// create folder for output images
 		if (bOutTrk3dImgFlg)
+#ifdef _WIN32
 			_mkdir(acOutTrk3dImgFlrPth);	// in Windows
-			//mkdir(acOutTrk3dImgFlrPth, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);	// in Linux
+#elif __linux__
+			mkdir(acOutTrk3dImgFlrPth, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);	// in Linux
+#endif
 
 		FILE* pfOutTrkTxt = std::fopen(acOutTrkPth, "w");
 		FILE* pfOutTrk3dTxt = std::fopen(acOutTrkPth, "w");
@@ -519,12 +529,12 @@ int main(int argc, char *argv[])
 			if (bOutTrk3dImgFlg || bOutVdoFlg)
 			{
 				std::sprintf(acInFrmNm, "%06d.jpg", f);
-				std::sprintf(acInFrmPth, acInFrmFlrPth);
+				std::sprintf(acInFrmPth, "%s", acInFrmFlrPth);
 				std::strcat(acInFrmPth, acInFrmNm);
 				oImgFrm = cv::imread(acInFrmPth, CV_LOAD_IMAGE_COLOR);
 			}
 
-			for (int i = 0; i < vvoTrkNd.size(); i++)
+			for (unsigned int i = 0; i < vvoTrkNd.size(); i++)
 			{
 				nTrajLen = vvoTrkNd[i].size();
 				if ((f >= vvoTrkNd[i][0].getFrmCnt()) && (f <= vvoTrkNd[i][nTrajLen - 1].getFrmCnt()))
@@ -552,7 +562,7 @@ int main(int argc, char *argv[])
 								// plot bounding box
 								cv::rectangle(oImgFrm, vvoTrkNd[i][j].getBBox(), voBBoxClr[i % voBBoxClr.size()], 2);
 								// plot vehicle ID
-								std::sprintf(acId, "%d", (i + 1));
+								std::sprintf(acId, "%ud", (i + 1));
 								cv::putText(oImgFrm, acId, vvoTrkNd[i][j].get2dFtPt(), cv::FONT_HERSHEY_SIMPLEX, 1, voBBoxClr[i % voBBoxClr.size()], 2);
 								// plot speed 
 								std::sprintf(acSpd, "%.3f", vvoTrkNd[i][j].getSpd());
@@ -579,7 +589,7 @@ int main(int argc, char *argv[])
 			if (bOutTrk3dImgFlg)
 			{
 				std::sprintf(acOutFrmNm, "%06d.jpg", (f + 1));
-				std::sprintf(acOutFrmPth, acOutTrk3dImgFlrPth);
+				std::sprintf(acOutFrmPth, "%s", acOutTrk3dImgFlrPth);
 				std::strcat(acOutFrmPth, acOutFrmNm);
 				cv::imwrite(acOutFrmPth, oImgFrm);
 			}
