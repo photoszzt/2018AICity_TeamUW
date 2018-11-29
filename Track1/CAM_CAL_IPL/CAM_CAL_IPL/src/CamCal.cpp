@@ -681,7 +681,7 @@ double CCamCal::calcReprojErr(CCamParam* poCamParam)
 	cv::Point oSt2dPt, oNd2dPt;
 	cv::Point3d oSt3dPt, oNd3dPt;
 
-	for (int i = 0; i < (voMeasLnSegNdPt.size() / 2); i++)
+	for (unsigned int i = 0; i < (voMeasLnSegNdPt.size() / 2); i++)
 	{
 		oSt2dPt = voMeasLnSegNdPt[i*2];
 		oNd2dPt = voMeasLnSegNdPt[i*2+1];
@@ -718,7 +718,7 @@ cv::Point CCamCal::calcStGrdPt(CCamParam* poCamParam)
 
 		if (voPt.size())
 		{
-			for (int i = 0; i < voPt.size(); i++)
+			for (unsigned int i = 0; i < voPt.size(); i++)
 			{
 				oStGrdPt.x = voPt[i].x; oStGrdPt.y = voPt[i].y;
 				if (tstStGrdPt(oStGrdPt, poCamParam)) { bStGrdPtFlg = true; break; }
@@ -1080,7 +1080,7 @@ void CCamCal::plt3dGrd(CCamParam* poCamParam, cv::Point2f oVr, cv::Point2f oVl, 
 	std::vector<cv::Point> voMeasLnSegNdPt = m_oCfg.getCalMeasLnSegNdPt();
 	cv::Point oSt2dPt, oNd2dPt;
 
-	for (int i = 0; i < (voMeasLnSegNdPt.size() / 2); i++)
+	for (unsigned int i = 0; i < (voMeasLnSegNdPt.size() / 2); i++)
 	{
 		oSt2dPt = voMeasLnSegNdPt[i * 2];
 		oNd2dPt = voMeasLnSegNdPt[i * 2 + 1];

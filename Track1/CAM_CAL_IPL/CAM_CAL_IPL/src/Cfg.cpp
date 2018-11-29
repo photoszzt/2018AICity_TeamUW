@@ -53,7 +53,7 @@ void CCfg::ldCfgFl()
 	strCfg.erase(std::remove_if(strCfg.begin(), strCfg.end(), [](char c) { return c >= 0 && isspace(c); }), strCfg.end());	// in Windows
     //strCfg.erase(std::remove_if(strCfg.begin(), strCfg.end(), ::isspace), strCfg.end());	// in Linux
 
-	int nParamPos = strCfg.find("\"inFrmPth\"");
+	size_t nParamPos = strCfg.find("\"inFrmPth\"");
 	if (nParamPos != std::string::npos)
 		std::strcpy(m_acInFrmPth, rdCharArr(strCfg, nParamPos).c_str());
 
@@ -165,7 +165,7 @@ bool CCfg::rdBool(std::string strCfg, int nParamPos)
 	nBoolVal = std::atoi(strCfg.substr(nValPos, nValLen).c_str());
 	if (nBoolVal > 0)
 		return true;
-	else if (nBoolVal <= 0)
+	else
 		return false;
 }
 
@@ -204,7 +204,7 @@ std::vector<float> CCfg::rdVecFlt(std::string strCfg, int nParamPos)
 
 std::vector<cv::Point> CCfg::rdVec2dPt(std::string strCfg, int nParamPos)
 {
-	int nValPos, nValLen, nValEnd, nXPos = nParamPos, nXLen, nYPos, nYLen;
+	int nValPos, nValEnd, nXPos = nParamPos, nXLen, nYPos, nYLen;
 	std::vector<cv::Point> vo2dPt;
 
 	nValPos = strCfg.find(":", (nParamPos + 1)) + 1;

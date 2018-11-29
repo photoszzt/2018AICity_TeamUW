@@ -7,8 +7,8 @@
 //
 //-----------------------------------------------------------------------------------
 
-#include <direct.h>	// in Windows
-//#include <sys/stat.h>	// in Linux
+//#include <direct.h>	// in Windows
+#include <sys/stat.h>	// in Linux
 #include "Cfg.h"
 #include "CamCal.h"
 
